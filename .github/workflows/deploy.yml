@@ -3,7 +3,7 @@ name: CI/CD for React App
 on:
   push:
     branches:
-      - main
+      - main  # Trigger workflow on push to the 'main' branch
 
 jobs:
   build-and-deploy:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20'  # Use Node.js 20 for the build step
 
       # Step 3: Install dependencies and build the React app
       - name: Install dependencies and build
@@ -33,8 +33,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
-          port: 22
+          port: 22  # Default SSH port
           script: |
-            rm -rf /var/www/my-react-app/*  # Clean up the old files
-            cp -r build/* /var/www/my-react-app/  # Copy the new build files
-            npx serve -s /var/www/my-react-app -l 80
+            rm -rf /var/www/my-react-app/*  # Clean up old files
+            cp -r build/* /var/www/my-react-app/  # Copy new build files
