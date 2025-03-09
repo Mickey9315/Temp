@@ -3,7 +3,7 @@ name: CI/CD for React App
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push to the 'main' branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Use Node.js version 20
+          node-version: '20'
 
       # Step 3: Install dependencies and build the React app
       - name: Install dependencies and build
