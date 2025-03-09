@@ -23,11 +23,13 @@ jobs:
       # Step 3: Install dependencies and build the React app
       - name: Install dependencies and build
         run: |
+          echo "Step: Installing dependencies"
           npm install
+          echo "Step: Dependencies installed successfully"
+          echo "Step: Building the React app"
           npm run build
-          # Debugging: Check if the build/ folder exists
-          echo "Listing build folder:"
-          ls -al build
+          echo "Step: Listing the build folder"
+          ls -al build || echo "Build folder does not exist!"
 
       # Step 4: Deploy to VPS
       - name: Deploy to VPS
@@ -38,5 +40,6 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22 # Default SSH port
           script: |
+            echo "Deploying to VPS"
             rm -rf /var/www/my-react-app/*  # Clean up old files
             cp -r build/* /var/www/my-react-app/  # Copy new build files
