@@ -1,0 +1,40 @@
+name: CI/CD for React App
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the 'main' branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Use Node.js version 20
+
+      # Step 3: Install dependencies and build the React app
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      # Step 4: Deploy to VPS
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          port: 22
+          script: |
+            rm -rf /var/www/my-react-app/*  # Clean up the old files
+            cp -r build/* /var/www/my-react-app/  # Copy the new build files
+            npx serve -s /var/www/my-react-app -l 80
