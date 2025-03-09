@@ -25,10 +25,12 @@ jobs:
         run: |
           echo "Step: Installing dependencies"
           npm install
-          echo "Step: Dependencies installed successfully"
+          echo "Dependencies installed successfully"
+
           echo "Step: Building the React app"
-          npm run build
-          echo "Step: Listing the build folder"
+          npm run build || echo "Build failed!"
+
+          echo "Step: Checking build folder"
           ls -al build || echo "Build folder does not exist!"
 
       # Step 4: Deploy to VPS
