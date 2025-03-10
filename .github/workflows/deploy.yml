@@ -13,48 +13,22 @@ jobs:
       # Step 1: Check out the code from the repository
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.ref }}
-        # Debug - confirm the repository contents
-        run: |
-          echo "Repository files:"
-          ls -al
 
       # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "20" # Use Node.js 20 for the build step
-        # Debug - confirm Node.js and npm versions
-        run: |
-          echo "Node.js version:"
-          node -v
-          echo "npm version:"
-          npm -v
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
+      # Step 3: Install dependencies and build the React app
+      - name: Install dependencies and build
         run: |
-          echo "Installing dependencies..."
           npm install
-          echo "Dependencies installed successfully"
-          echo "Checking node_modules directory:"
-          ls -al node_modules || echo "node_modules directory not found!"
-          echo "Checking package.json:"
-          cat package.json || echo "package.json not found!"
-          echo "Checking package-lock.json:"
-          cat package-lock.json || echo "package-lock.json not found!"
-
-      # Step 4: Build the React app
-      - name: Build the React app
-        run: |
-          echo "Building the React app..."
-          npm run build || { echo "Build failed!"; exit 1; }
-          echo "Build folder contents:"
-          ls -al build || echo "Build folder does not exist!"
-
-      # Step 5: Deploy to VPS
+          npm run build
+          # Debugging: Check if the build/ folder exists
+          echo "Listing build folder:"
+          ls -al build
+      # Step 4: Deploy to VPS
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -63,13 +37,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22 # Default SSH port
           script: |
-            echo "Deploying to VPS"
             rm -rf /var/www/my-react-app/*  # Clean up old files
-            echo "Copying build files to VPS..."
-            if [ -d "build" ]; then
-              cp -r build/* /var/www/my-react-app/ || { echo "Failed to copy build files!"; exit 1; }
-            else
-              echo "Build directory does not exist!"
-              exit 1
-            fi
-            echo "Deployment complete"
+            cp -r build/* /var/www/my-react-app/  # Copy new build files
