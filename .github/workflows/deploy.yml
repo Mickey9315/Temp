@@ -31,10 +31,14 @@ jobs:
       # Step 4: Deploy to VPS
       - name: Transfer build files to VPS
         run: |
+          echo "Creating temporary SSH key file..."
+          echo "${{ secrets.VPS_KEY }}" > ssh_key  # Write the private key to a temporary file
+          chmod 600 ssh_key  # Set the correct permissions for the SSH key file
           echo "Transferring build files to VPS..."
-          scp -r -o StrictHostKeyChecking=no -i ${{ secrets.VPS_KEY }} build/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/my-react-app/
+          scp -r -o StrictHostKeyChecking=no -i ssh_key build/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/my-react-app/
           echo "Files transferred successfully!"
-
+          echo "Cleaning up temporary SSH key..."
+          rm -f ssh_key  # Remove the temporary SSH key file
       # Step 5: Verify deployment
       - name: Verify deployment on VPS
         uses: appleboy/ssh-action@v0.1.5
