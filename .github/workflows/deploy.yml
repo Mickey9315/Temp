@@ -29,13 +29,20 @@ jobs:
           echo "Listing build folder:"
           ls -al build
       # Step 4: Deploy to VPS
-      - name: Deploy to VPS
+      - name: Transfer build files to VPS
+        run: |
+          echo "Transferring build files to VPS..."
+          scp -r -o StrictHostKeyChecking=no -i ${{ secrets.VPS_KEY }} build/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/my-react-app/
+          echo "Files transferred successfully!"
+
+      # Step 5: Verify deployment
+      - name: Verify deployment on VPS
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
-          port: 22 # Default SSH port
+          port: 22
           script: |
-            rm -rf /var/www/my-react-app/*  # Clean up old files
-            cp -r build/* /var/www/my-react-app/  # Copy new build files
+            echo "Checking deployed files on VPS..."
+            ls -al /var/www/my-react-app/
